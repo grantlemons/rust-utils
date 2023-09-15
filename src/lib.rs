@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::hash::Hash;
 
@@ -29,8 +30,24 @@ pub fn ordinal_suffix<'a, T: Into<i128> + PartialOrd>(value: T) -> &'a str {
     }
 }
 
-pub fn ordinal<T: Into<i128> + PartialOrd + Copy + std::fmt::Display>(value: T) -> String {
-    format!("{}{}", value, ordinal_suffix(value))
+pub fn ordinal<T: Into<i128> + PartialOrd + Copy>(value: T) -> String {
+    format!("{}{}", value.into(), ordinal_suffix(value))
+}
+
+pub fn pluralize_int<'a, T: Into<i128> + PartialOrd>(word: &'a str, count: T) -> Cow<'a, str> {
+    if count.into().abs() == 1 {
+        word.into()
+    } else {
+        format!("{}s", word).into()
+    }
+}
+
+pub fn pluralize_iter<'a, T: Iterator>(word: &'a str, collection: T) -> Cow<'a, str> {
+    if collection.count() == 1 {
+        word.into()
+    } else {
+        format!("{}s", word).into()
+    }
 }
 
 #[cfg(test)]
@@ -86,5 +103,21 @@ mod tests {
         assert_eq!(ordinal(8), "8th");
         assert_eq!(ordinal(156), "156th");
         assert_eq!(ordinal(890345823), "890345823rd");
+    }
+
+    #[test]
+    fn pluralize_int_test() {
+        assert_eq!(pluralize_int("word", 0).to_owned(), "words");
+        assert_eq!(pluralize_int("word", 1).to_owned(), "word");
+        assert_eq!(pluralize_int("word", 2).to_owned(), "words");
+        assert_eq!(pluralize_int("word", -1).to_owned(), "word");
+        assert_eq!(pluralize_int("word", -2).to_owned(), "words");
+    }
+
+    #[test]
+    fn pluralize_iter_test() {
+        assert_eq!(pluralize_iter("word", 1..3).to_owned(), "words");
+        assert_eq!(pluralize_iter("word", 1..1).to_owned(), "words");
+        assert_eq!(pluralize_iter("word", 1..=1).to_owned(), "word");
     }
 }
