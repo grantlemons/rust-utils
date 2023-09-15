@@ -19,6 +19,20 @@ pub fn count_occurrences<T: Sized + Copy + PartialEq>(array: &[T], value: T) -> 
     array.iter().filter(|v| **v == value).count()
 }
 
+pub fn ordinal_suffix<'a, T: Into<i128> + PartialOrd>(value: T) -> &'a str {
+    match value.into().abs() {
+        1 => "st",
+        2 => "nd",
+        3 => "rd",
+        v if v >= 20 => ordinal_suffix(v % 10),
+        _ => "th",
+    }
+}
+
+pub fn ordinal<T: Into<i128> + PartialOrd + Copy + std::fmt::Display>(value: T) -> String {
+    format!("{}{}", value, ordinal_suffix(value))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -44,5 +58,33 @@ mod tests {
         assert_eq!(count_occurrences(&arr, 15), 2);
         assert_eq!(count_occurrences(&arr, 312), 3);
         assert_eq!(count_occurrences(&arr, 543), 1);
+    }
+
+    #[test]
+    fn ordinal_suffix_test() {
+        assert_eq!(ordinal_suffix(0), "th");
+        assert_eq!(ordinal_suffix(1), "st");
+        assert_eq!(ordinal_suffix(2), "nd");
+        assert_eq!(ordinal_suffix(3), "rd");
+        assert_eq!(ordinal_suffix(-1), "st");
+        assert_eq!(ordinal_suffix(-2), "nd");
+        assert_eq!(ordinal_suffix(-3), "rd");
+        assert_eq!(ordinal_suffix(8), "th");
+        assert_eq!(ordinal_suffix(156), "th");
+        assert_eq!(ordinal_suffix(890345823), "rd");
+    }
+
+    #[test]
+    fn ordinal_test() {
+        assert_eq!(ordinal(0), "0th");
+        assert_eq!(ordinal(1), "1st");
+        assert_eq!(ordinal(2), "2nd");
+        assert_eq!(ordinal(3), "3rd");
+        assert_eq!(ordinal(-1), "-1st");
+        assert_eq!(ordinal(-2), "-2nd");
+        assert_eq!(ordinal(-3), "-3rd");
+        assert_eq!(ordinal(8), "8th");
+        assert_eq!(ordinal(156), "156th");
+        assert_eq!(ordinal(890345823), "890345823rd");
     }
 }
