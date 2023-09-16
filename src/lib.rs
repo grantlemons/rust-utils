@@ -42,14 +42,6 @@ pub fn pluralize_int<'a, T: Into<i128> + PartialOrd>(word: &'a str, count: T) ->
     }
 }
 
-pub fn pluralize_iter<'a, T: Iterator>(word: &'a str, collection: T) -> Cow<'a, str> {
-    if collection.count() == 1 {
-        word.into()
-    } else {
-        format!("{}s", word).into()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -112,12 +104,5 @@ mod tests {
         assert_eq!(pluralize_int("word", 2).to_owned(), "words");
         assert_eq!(pluralize_int("word", -1).to_owned(), "word");
         assert_eq!(pluralize_int("word", -2).to_owned(), "words");
-    }
-
-    #[test]
-    fn pluralize_iter_test() {
-        assert_eq!(pluralize_iter("word", 1..3).to_owned(), "words");
-        assert_eq!(pluralize_iter("word", 1..1).to_owned(), "words");
-        assert_eq!(pluralize_iter("word", 1..=1).to_owned(), "word");
     }
 }
