@@ -5,12 +5,8 @@ use std::hash::Hash;
 pub fn frequency<T: Sized + Copy + Hash + Eq>(input: &[T]) -> HashMap<T, u64> {
     let mut map = HashMap::new();
 
-    for value in input {
-        if let Some(freq) = map.get_mut(value) {
-            *freq += 1;
-        } else {
-            map.insert(*value, 1);
-        }
+    for &value in input {
+        *map.entry(value).or_default() += 1;
     }
 
     map
