@@ -12,8 +12,8 @@ pub fn frequency<T: Sized + Copy + Hash + Eq>(input: &[T]) -> HashMap<T, u64> {
     map
 }
 
-pub fn count_occurrences<T: Sized + Copy + PartialEq>(array: &[T], value: T) -> usize {
-    array.iter().filter(|v| **v == value).count()
+pub fn count_occurrences<T: Sized + Copy + PartialEq>(slice: &[T], value: T) -> usize {
+    slice.iter().filter(|v| **v == value).count()
 }
 
 pub fn ordinal_suffix<'a, T: Into<i128> + PartialOrd>(value: T) -> &'a str {
